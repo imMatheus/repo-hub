@@ -15,7 +15,7 @@ const SEARCH_REPOSITORIES = gql`
             defaultBranchRef {
                 target {
                     ... on Commit {
-                        history(first: 2) {
+                        history(first: 100) {
                             totalCount
                             edges {
                                 node {
@@ -39,11 +39,13 @@ const SEARCH_REPOSITORIES = gql`
 const Repo: React.FC = ({}) => {
     const { login, name } = useParams()
 
-    const { loading, error, data } = useQuery(SEARCH_REPOSITORIES, {
+    const { loading, error, data, fetchMore } = useQuery(SEARCH_REPOSITORIES, {
         variables: { login, name },
     })
 
     console.log(error)
+
+    if (loading) return <p>loading...</p>
 
     if (error) return <p>error</p>
     return <pre>{JSON.stringify(data, null, 2)}</pre>
