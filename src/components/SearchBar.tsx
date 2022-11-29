@@ -6,11 +6,11 @@ const SearchBar: React.FC = ({}) => {
     const [searchParams, setSearchParams] = useSearchParams({ query: '' })
 
     return (
-        <div>
+        <>
             <p className='mb-1 text-text-gray'>
                 e.x "facebook/react" or "google/angular"
             </p>
-            <div className='mb-3 rounded border-2 border-text-gray bg-bg-gray px-5 py-3 focus-within:border-primary focus-within:text-primary'>
+            <div className='focus-within:border-light peer mb-3 rounded border-2 border-text-gray bg-bg-gray px-5 py-3 focus-within:text-primary-light'>
                 <input
                     type='text'
                     value={searchParams.get('query') as string}
@@ -19,12 +19,14 @@ const SearchBar: React.FC = ({}) => {
                     className='w-full bg-transparent outline-none placeholder:text-text-gray'
                 />
             </div>
-            {searchParams.get('query') && (
-                <DropdownSuggestions
-                    query={searchParams.get('query') as string}
-                />
-            )}
-        </div>
+            <div className='max-h-0 overflow-hidden transition-all peer-focus-within:max-h-[700px]'>
+                {searchParams.get('query') && (
+                    <DropdownSuggestions
+                        query={searchParams.get('query') as string}
+                    />
+                )}
+            </div>
+        </>
     )
 }
 

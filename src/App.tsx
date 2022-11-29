@@ -1,6 +1,9 @@
 import './App.css'
 import RepositoryGraph from './components/RepositoryGraph'
 import SearchBar from './components/SearchBar'
+import { Routes, Route } from 'react-router-dom'
+import Home from './pages/Home'
+import Repo from './pages/Repo'
 
 function App() {
     return (
@@ -14,9 +17,10 @@ function App() {
                         See the proggress of diffrent repos from start to finish
                     </p>
                 </div>
-
-                <SearchBar />
-                <RepositoryGraph />
+                <Routes>
+                    <Route path='/' element={<Home />} />
+                    <Route path='/:login/:name' element={<Repo />} />
+                </Routes>
             </section>
         </div>
     )
