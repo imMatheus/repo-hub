@@ -2,6 +2,7 @@ import React from 'react'
 import { useQuery, gql } from '@apollo/client'
 import { SearchQueryResponse } from '../types'
 import Link from 'next/link'
+import Spinner from '@/components/Spinner'
 
 const SEARCH_REPOSITORIES = gql`
     query RepositoriesQuery($query: String!) {
@@ -41,10 +42,7 @@ const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({ query }) => {
         }
     )
 
-    if (loading && !data)
-        return (
-            <div className='h-6 w-6 animate-spin rounded-full border-4 border-bg-gray border-t-primary'></div>
-        )
+    if (loading && !data) return <Spinner />
     if (error) {
         console.log(error)
 

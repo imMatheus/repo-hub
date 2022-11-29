@@ -13,6 +13,7 @@ export default function Home() {
                 />
                 <link rel='icon' href='/favicon.ico' />
             </Head>
+            {process.env.NEXT_PUBLIC_GITHUB_TOKEN}
             <SearchBar />
             <RepositoryGraph />
         </div>

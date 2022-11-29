@@ -22,7 +22,7 @@ const SearchBar: React.FC = ({}) => {
                     className='w-full bg-transparent outline-none placeholder:text-text-gray'
                 />
             </div>
-            <div className='max-h-0 overflow-hidden transition-all peer-focus-within:max-h-[700px]'>
+            <div className='max-h-0 overflow-hidden transition-all hover:max-h-[700px] peer-focus-within:max-h-[700px] '>
                 {searchParams && <DropdownSuggestions query={searchParams} />}
             </div>
         </>

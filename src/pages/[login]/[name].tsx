@@ -2,6 +2,8 @@ import React from 'react'
 import type { NextPage } from 'next'
 import { useQuery, gql } from '@apollo/client'
 import { RepoQueryResponse } from '@/types'
+import { useRouter } from 'next/router'
+import Spinner from '@/components/Spinner'
 
 const SEARCH_REPOSITORIES = gql`
     query RepositoriesQuery($login: String!, $name: String!) {
@@ -36,7 +38,23 @@ const SEARCH_REPOSITORIES = gql`
     }
 `
 const Repository: NextPage = () => {
-    return <div>repo</div>
+    const router = useRouter()
+    const { login, name } = router.query
+    const { loading, error, data } = useQuery<RepoQueryResponse>(
+        SEARCH_REPOSITORIES,
+        {
+            variables: { login, name },
+        }
+    )
+
+    if (loading)
+        return (
+            <div className='mx-auto w-max'>
+                <Spinner />
+            </div>
+        )
+
+    return <pre>{JSON.stringify(data, null, 2)}</pre>
 }
 
 export default Repository
