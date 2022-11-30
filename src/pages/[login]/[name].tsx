@@ -1,17 +1,18 @@
 import React from 'react'
 import type { NextPage } from 'next'
-import { useQuery, gql } from '@apollo/client'
+import { useQuery } from '@apollo/client'
 import { RepoQueryResponse } from '@/types'
 import { useRouter } from 'next/router'
 import Spinner from '@/components/Spinner'
+import { gql } from '../../__generated__/gql'
 
-const SEARCH_REPOSITORIES = gql`
-    query RepositoriesQuery($login: String!, $name: String!) {
+const GET_REPOSITORY = gql(/* GraphQL */ `
+    query GetRepository($login: String!, $name: String!) {
         rateLimit {
             limit
-            cost
             remaining
             resetAt
+            cost
         }
         repository(name: $name, owner: $login) {
             defaultBranchRef {
@@ -36,16 +37,13 @@ const SEARCH_REPOSITORIES = gql`
             }
         }
     }
-`
+`)
 const Repository: NextPage = () => {
     const router = useRouter()
     const { login, name } = router.query
-    const { loading, error, data } = useQuery<RepoQueryResponse>(
-        SEARCH_REPOSITORIES,
-        {
-            variables: { login, name },
-        }
-    )
+    const { loading, error, data } = useQuery(GET_REPOSITORY, {
+        variables: { login: login as string, name: name as string },
+    })
 
     if (loading)
         return (
@@ -54,7 +52,29 @@ const Repository: NextPage = () => {
             </div>
         )
 
-    return <pre>{JSON.stringify(data, null, 2)}</pre>
+    const target = data?.repository?.defaultBranchRef?.target
+    if (error || !data || !target)
+        return <div className='mx-auto w-max'>error</div>
+
+    const commits = 'history' in target ? target.history.edges : null
+    const count = commits?.reduce(
+        (a, b) => a + (b?.node?.additions - b?.node?.deletions),
+        0
+    )
+    const arr = commits?.map((commit) => ({
+        add: commit?.node?.additions,
+        del: commit?.node?.deletions,
+        diff: commit?.node?.additions - commit?.node?.deletions,
+    }))
+
+    console.table(arr)
+
+    return (
+        <>
+            <pre>{JSON.stringify(count, null, 2)}</pre>
+            <pre>{JSON.stringify(arr, null, 2)}</pre>
+        </>
+    )
 }
 
 export default Repository
