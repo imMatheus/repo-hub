@@ -13,6 +13,15 @@ export const GET_REPOSITORY = gql(/* GraphQL */ `
                 target {
                     id
                     oid
+                    repository {
+                        createdAt
+                        owner {
+                            id
+                            avatarUrl
+                            login
+                            url
+                        }
+                    }
                     ... on Commit {
                         history(first: 100, after: $after) {
                             totalCount
@@ -20,9 +29,26 @@ export const GET_REPOSITORY = gql(/* GraphQL */ `
                                 node {
                                     ... on Commit {
                                         committedDate
+                                        authoredDate
+                                        message
+                                        messageBody
+                                        messageBodyHTML
+                                        messageHeadline
+                                        messageHeadlineHTML
+                                        committer {
+                                            user {
+                                                url
+                                                avatarUrl
+                                                name
+                                                login
+                                            }
+                                        }
+                                        pushedDate
                                         deletions
                                         additions
                                         id
+                                        url
+                                        commitUrl
                                     }
                                 }
                                 cursor
