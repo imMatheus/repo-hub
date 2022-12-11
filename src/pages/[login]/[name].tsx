@@ -4,6 +4,7 @@ import { useRouter } from 'next/router'
 import Spinner from '@/components/Spinner'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { getRepo } from '@/utils/getRepo'
+import { VictoryChart, VictoryLine } from 'victory'
 
 export const getServerSideProps: GetServerSideProps<
     Awaited<ReturnType<typeof getRepo>>
@@ -16,7 +17,7 @@ export const getServerSideProps: GetServerSideProps<
 
 const Repository: NextPage<
     InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ message, commitsCount, stuff }) => {
+> = ({ message, stuff, totalCount, time }) => {
     const router = useRouter()
     const { login, name } = router.query
 
@@ -28,9 +29,26 @@ const Repository: NextPage<
             </div>
         )
 
+    let c = 0
+    const l = stuff?.reverse().map((a, i) => {
+        c += (a?.node?.additions || 0) - (a?.node?.deletions || 0)
+        return { x: a?.node?.pushedDate, y: c }
+    })
+
     return (
         <>
-            <pre>{JSON.stringify(stuff, null, 2)}</pre>
+            <h1 className='text-3xl font-black'>
+                {totalCount} - {time} - {c}
+            </h1>
+            <VictoryChart>
+                <VictoryLine
+                    style={{
+                        data: { stroke: '#26f' },
+                        parent: { border: '1px solid #ccc', stroke: '#26f' },
+                    }}
+                    data={l}
+                />
+            </VictoryChart>
         </>
     )
 }
