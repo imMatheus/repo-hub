@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Spinner from '@/components/Spinner'
 import type { GetServerSideProps, InferGetServerSidePropsType } from 'next'
 import { getRepo } from '@/utils/getRepo'
-import { VictoryChart, VictoryLine } from 'victory'
+import Graph from '@/components/Graph'
 
 export const getServerSideProps: GetServerSideProps<
     Awaited<ReturnType<typeof getRepo>>
@@ -30,25 +30,33 @@ const Repository: NextPage<
         )
 
     let c = 0
-    const l = stuff?.reverse().map((a, i) => {
-        c += (a?.node?.additions || 0) - (a?.node?.deletions || 0)
-        return { x: a?.node?.pushedDate, y: c }
-    })
+    const commits = stuff?.reverse()
+
+    const labels = commits?.map((commit) => commit?.node?.committedDate)
+
+    const data = {
+        labels,
+        datasets: [
+            {
+                data: commits?.map((commit) => {
+                    c +=
+                        (commit?.node?.additions || 0) -
+                        (commit?.node?.deletions || 0)
+
+                    return c
+                }),
+                borderColor: 'rgb(53, 162, 235)',
+                backgroundColor: 'rgba(53, 162, 235, 0.5)',
+            },
+        ],
+    }
 
     return (
         <>
             <h1 className='text-3xl font-black'>
                 {totalCount} - {time} - {c}
             </h1>
-            <VictoryChart>
-                <VictoryLine
-                    style={{
-                        data: { stroke: '#26f' },
-                        parent: { border: '1px solid #ccc', stroke: '#26f' },
-                    }}
-                    data={l}
-                />
-            </VictoryChart>
+            <Graph height={300} width={300} />
         </>
     )
 }
