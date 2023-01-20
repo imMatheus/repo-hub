@@ -56,7 +56,7 @@ const Repository: NextPage<
             <h1 className='text-3xl font-black'>
                 {totalCount} - {time} - {c}
             </h1>
-            <Graph height={300} width={300} />
+            {/* <Graph height={300} width={300} /> */}
         </>
     )
 }
