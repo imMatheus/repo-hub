@@ -1,65 +1,48 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery, gql } from '@apollo/client'
 import { SearchQueryResponse } from '../types'
 import Link from 'next/link'
 import Spinner from '@/components/Spinner'
-
-const SEARCH_REPOSITORIES = gql`
-    query RepositoriesQuery($query: String!) {
-        rateLimit {
-            limit
-            cost
-            remaining
-            resetAt
-        }
-        search(query: $query, type: REPOSITORY, first: 10) {
-            repositoryCount
-            nodes {
-                ... on Repository {
-                    id
-                    name
-                    description
-                    nameWithOwner
-                    stargazerCount
-                    owner {
-                        avatarUrl
-                    }
-                }
-            }
-        }
-    }
-`
 
 interface DropdownSuggestionsProps {
     query: string
 }
 
 const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({ query }) => {
-    const { loading, error, data } = useQuery<SearchQueryResponse>(
-        SEARCH_REPOSITORIES,
-        {
-            variables: { query },
+    const [loading, setLoading] = useState(true)
+    const [repos, setRepos] = useState<any[]>([])
+
+    useEffect(() => {
+        async function getRepos() {
+            const res = await fetch(
+                'https://api.github.com/search/repositories?q=' + query
+            )
+            const data = await res.json()
+            console.log(data)
+            setRepos(data.items)
         }
-    )
 
-    if (loading && !data) return <Spinner />
-    if (error) {
-        console.log(error)
+        getRepos()
+    }, [query])
 
-        return (
-            <p>
-                Error {query}: {error.message}
-            </p>
-        )
-    }
-    if (!data || data.search.repositoryCount === 0) return <div>No matches</div>
+    if (loading && repos.length < 1) return <Spinner />
+    // if (error) {
+    //     console.log(error)
+
+    //     return (
+    //         <p>
+    //             Error {query}: {error.message}
+    //         </p>
+    //     )
+    // }
+    // if (!data || data.search.repositoryCount === 0) return <div>No matches</div>
     return (
         <div className='divide-y divide-text-gray/50 rounded-md border-2 border-text-gray/50'>
-            {data.search.nodes.map((repo) => {
+            {/* {repos?.map((repo) => {
                 return (
                     <Link
                         key={repo.id}
-                        href={repo.nameWithOwner}
+                        href={repo.id}
                         className='flex items-center gap-3 px-5 py-4 text-sm hover:bg-primary'
                     >
                         <img
@@ -67,10 +50,10 @@ const DropdownSuggestions: React.FC<DropdownSuggestionsProps> = ({ query }) => {
                             src={repo.owner.avatarUrl}
                             alt=''
                         />
-                        <p>{repo.nameWithOwner}</p>
+                        <p>{repo.full_name}</p>
                     </Link>
                 )
-            })}
+            })} */}
         </div>
     )
 }

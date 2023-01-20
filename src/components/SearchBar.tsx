@@ -1,11 +1,7 @@
 import React, { useState } from 'react'
-import { useRouter } from 'next/router'
 import DropdownSuggestions from './DropdownSuggestions'
 
 const SearchBar: React.FC = ({}) => {
-    const router = useRouter()
-    const { query } = router.query
-
     const [searchParams, setSearchParams] = useState('')
 
     return (
